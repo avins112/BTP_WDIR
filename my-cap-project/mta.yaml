@@ -1,0 +1,31 @@
+_schema-version: "3.2"
+ID: my-cap-project
+version: 1.0.0
+modules:
+  - name: srv
+    type: nodejs
+    path: srv
+    provides:
+      - name: srv-api
+        properties:
+          url: ${default-url}
+  - name: my-cap-project-srv
+    type: nodejs
+    path: gen/srv
+    requires:
+      - name: my-cap-project-db
+
+  - name: my-cap-project-db-deployer
+    type: hdb
+    path: gen/db
+    parameters:
+      buildpack: nodejs_buildpack
+    requires:
+      - name: my-cap-project-db
+
+resources:
+  - name: my-cap-project-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared

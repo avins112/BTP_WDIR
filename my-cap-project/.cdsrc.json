@@ -1,0 +1,16 @@
+{
+    "folders": {
+      "db": "./db",
+      "srv": "./srv"
+    },
+    "build": {
+      "target": "gen",
+      "tasks": [
+        {
+          "for": "hana",
+          "src": "db"
+        }
+      ]
+    }
+  }
+  

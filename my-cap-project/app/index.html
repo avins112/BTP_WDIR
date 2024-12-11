@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Population Data</title>
+</head>
+<body>
+    <h1>Population Data</h1>
+    <button id="fetchData">Fetch Data</button>
+    <div id="data-container">
+        <!-- Table will be dynamically added here -->
+    </div>
+
+    <script>
+       document.getElementById('fetchData').addEventListener('click', async () => {
+    try {
+        // Fetch data from the backend
+        const response = await fetch('/odata/v4/catalog/PopulationData');
+
+        // Ensure the response is successful
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Parse the JSON response
+        const result = await response.json();
+        console.log('API Response:', result);
+
+        // Access the 'value' array from the response
+        const data = result.value;
+
+        // Clear the container before rendering the table
+        const container = document.getElementById('data-container');
+        container.innerHTML = '';
+
+        // Check if the data is not empty
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p>No data available.</p>';
+            return;
+        }
+
+        // Create a table
+        const table = document.createElement('table');
+
+        // Create the table header
+        const headers = ['ID Nation', 'Nation', 'ID Year', 'Year', 'Population', 'Slug Nation'];
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            th.style.padding = '8px';
+            th.style.textAlign = 'left';
+            th.style.backgroundColor = '#f4f4f4';
+            headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        // Create the table body
+        const tbody = document.createElement('tbody');
+        data.forEach(item => {
+            const row = document.createElement('tr');
+
+            // Create cells for all required fields
+            const idNationCell = document.createElement('td');
+            idNationCell.textContent = item["ID Nation"];
+            row.appendChild(idNationCell);
+
+            const nationCell = document.createElement('td');
+            nationCell.textContent = item.Nation;
+            row.appendChild(nationCell);
+
+            const idYearCell = document.createElement('td');
+            idYearCell.textContent = item["ID Year"];
+            row.appendChild(idYearCell);
+
+            const yearCell = document.createElement('td');
+            yearCell.textContent = item.Year;
+            row.appendChild(yearCell);
+
+            const populationCell = document.createElement('td');
+            populationCell.textContent = item.Population;
+            row.appendChild(populationCell);
+
+            const slugNationCell = document.createElement('td');
+            slugNationCell.textContent = item["Slug Nation"];
+            row.appendChild(slugNationCell);
+
+            tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+
+        // Append the table to the container
+        container.appendChild(table);
+    } catch (err) {
+        console.error('Error fetching data:', err);
+        alert(`Failed to fetch data: ${err.message}`);
+    }
+});
+
+    </script>
+    
+</body>
+</html>

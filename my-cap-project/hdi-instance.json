@@ -1,0 +1,18 @@
+{
+    "space_guid": "<space-guid>",
+    "service": "hana",
+    "plan": "hdi-shared",
+    "parameters": {
+      "database_id": "my-hana-db",
+      "database_user": "DB_USER",
+      "permissions": [
+        {
+          "role": "object_owner",
+          "users": ["DB_USER"]
+        }
+      ]
+    },
+    "tags": ["hana", "hdi"]
+  }
+
+  
