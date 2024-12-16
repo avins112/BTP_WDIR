@@ -1,0 +1,114 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Excel File</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Upload Excel File</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="file" name="file" class="form-control-file" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+        {% if table_data %}
+            <h3 class="mt-5">Summary Statistics</h3>
+            <div class="table-responsive">
+                {{ table_data|safe }}
+            </div>
+        {% endif %}
+        {% if graphs %}
+            <h3 class="mt-5">Visualizations</h3>
+            <div>
+                {% for graph in graphs %}
+                    <div id="graph-{{ loop.index }}" style="height: 400px; margin-bottom: 20px;"></div>
+                    <script>
+                        var graphData = {{ graph|safe }};
+                        Plotly.newPlot('graph-{{ loop.index }}', graphData.data, graphData.layout);
+                    </script>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Excel File</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Upload Excel File</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="file" name="file" class="form-control-file" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+        {% if table_data %}
+            <h3 class="mt-5">Summary Statistics</h3>
+            <div class="table-responsive">
+                {{ table_data|safe }}
+            </div>
+        {% endif %}
+
+        <h3 class="mt-5">Generate Custom Graphs</h3>
+        <form id="graph-form">
+            <div class="form-group">
+                <label for="x-axis">X-Axis:</label>
+                <input type="text" id="x-axis" name="x_axis" class="form-control" placeholder="Enter column for X-axis">
+            </div>
+            <div class="form-group">
+                <label for="y-axis">Y-Axis:</label>
+                <input type="text" id="y-axis" name="y_axis" class="form-control" placeholder="Enter column for Y-axis">
+            </div>
+            <div class="form-group">
+                <label for="chart-type">Chart Type:</label>
+                <select id="chart-type" name="chart_type" class="form-control">
+                    <option value="bar">Bar</option>
+                    <option value="scatter">Scatter</option>
+                    <option value="line">Line</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Generate Graph</button>
+        </form>
+        <div id="custom-graph" class="mt-5" style="height: 500px;"></div>
+    </div>
+
+    <script>
+        $('#graph-form').submit(function(e) {
+            e.preventDefault();
+            const query = {
+                x_axis: $('#x-axis').val(),
+                y_axis: $('#y-axis').val(),
+                chart_type: $('#chart-type').val()
+            };
+            $.ajax({
+                url: '/generate-graph',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(query),
+                success: function(response) {
+                    const graph = JSON.parse(response.graph);
+                    Plotly.newPlot('custom-graph', graph.data, graph.layout);
+                },
+                error: function() {
+                    alert('Failed to generate graph. Please check your inputs.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
