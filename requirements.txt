@@ -1,6 +1,6 @@
-Flask==2.3.*
+Flask
 pandas
 xlrd  # If working with older Excel files
-hdbcli==2.17.*
+hdbcli
 openpyxl
-hanaml
+hana_ml

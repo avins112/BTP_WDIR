@@ -5,47 +5,6 @@
     <title>Upload Excel File</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-</head>
-<body>
-    <div class="container mt-5">
-        <h2>Upload Excel File</h2>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <input type="file" name="file" class="form-control-file" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
-        {% if table_data %}
-            <h3 class="mt-5">Summary Statistics</h3>
-            <div class="table-responsive">
-                {{ table_data|safe }}
-            </div>
-        {% endif %}
-        {% if graphs %}
-            <h3 class="mt-5">Visualizations</h3>
-            <div>
-                {% for graph in graphs %}
-                    <div id="graph-{{ loop.index }}" style="height: 400px; margin-bottom: 20px;"></div>
-                    <script>
-                        var graphData = {{ graph|safe }};
-                        Plotly.newPlot('graph-{{ loop.index }}', graphData.data, graphData.layout);
-                    </script>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
-</body>
-</html> -->
-
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Upload Excel File</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -106,6 +65,95 @@
                 },
                 error: function() {
                     alert('Failed to generate graph. Please check your inputs.');
+                }
+            });
+        });
+    </script>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Excel File</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Upload Excel File</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input type="file" name="file" class="form-control-file" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+
+        {% if table_data %}
+            <h3 class="mt-5">Summary Statistics</h3>
+            <div class="table-responsive">
+                {{ table_data|safe }}
+            </div>
+        {% endif %}
+
+        <h3 class="mt-5">SARIMA Forecast</h3>
+        <form id="sarima-form" method="post">
+            <div class="form-group">
+                <label for="gl-account">GL Account:</label>
+                <input type="number" id="gl-account" name="GL_ACCOUNT" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="DESCRIPTION" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="profit-ctr">Profit Center:</label>
+                <input type="text" id="profit-ctr" name="PROFIT_CTR" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="company-code">Company Code:</label>
+                <input type="number" id="company-code" name="COMPANY_CODE" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-warning">Generate SARIMA Forecast</button>
+        </form>
+
+        <div id="sarima-result" class="mt-5"></div>
+    </div>
+
+    <script>
+        $('#sarima-form').submit(function(e) {
+            e.preventDefault();
+            const data = {
+                GL_ACCOUNT: $('#gl-account').val(),
+                DESCRIPTION: $('#description').val(),
+                PROFIT_CTR: $('#profit-ctr').val(),
+                COMPANY_CODE: $('#company-code').val()
+            };
+            $.ajax({
+                url: '/sarima',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    const { dates, forecast, lower_ci, upper_ci } = response;
+                    let html = '<h4>Forecast Results</h4><table class="table table-striped">';
+                    html += '<tr><th>Date</th><th>Forecast</th><th>Lower CI</th><th>Upper CI</th></tr>';
+                    for (let i = 0; i < dates.length; i++) {
+                        html += `<tr>
+                                    <td>${dates[i]}</td>
+                                    <td>${forecast[i].toFixed(2)}</td>
+                                    <td>${lower_ci[i].toFixed(2)}</td>
+                                    <td>${upper_ci[i].toFixed(2)}</td>
+                                 </tr>`;
+                    }
+                    html += '</table>';
+                    $('#sarima-result').html(html);
+                },
+                error: function(response) {
+                    alert(response.responseJSON.error || 'Error generating forecast.');
                 }
             });
         });
