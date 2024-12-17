@@ -1,6 +1,6 @@
 Flask
-pandas
-xlrd  # If working with older Excel files
+pandas 
 hdbcli
-openpyxl
 hana_ml
+statsmodels
+matplotlib

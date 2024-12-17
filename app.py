@@ -15,6 +15,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def index():
     return render_template('upload.html')
 
+@app.route('/test')
+def test():
+    return 'test1'
+
 @app.route('/sarima', methods=['POST'])
 def sarima_forecast():
     try:
@@ -54,4 +58,5 @@ def sarima_forecast():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+      print('hello')
+      app.run(host='0.0.0.0', port=8000)
