@@ -84,22 +84,8 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Upload Excel File</h2>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <input type="file" name="file" class="form-control-file" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
-        </form>
 
-        {% if table_data %}
-            <h3 class="mt-5">Summary Statistics</h3>
-            <div class="table-responsive">
-                {{ table_data|safe }}
-            </div>
-        {% endif %}
-
-        <h3 class="mt-5">SARIMA Forecast</h3>
+        <h3 class="mt-5">Forecasting</h3>
         <form id="sarima-form" method="post">
             <div class="form-group">
                 <label for="gl-account">GL Account:</label>
@@ -138,7 +124,7 @@
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function(response) {
-                    const { dates, forecast, lower_ci, upper_ci } = response;
+                    const { dates, forecast, lower_ci, upper_ci, plot } = response;
                     let html = '<h4>Forecast Results</h4><table class="table table-striped">';
                     html += '<tr><th>Date</th><th>Forecast</th><th>Lower CI</th><th>Upper CI</th></tr>';
                     for (let i = 0; i < dates.length; i++) {
@@ -150,6 +136,7 @@
                                  </tr>`;
                     }
                     html += '</table>';
+                    html += `<h4 class="mt-3">Forecast Plot</h4><img src="data:image/png;base64,${plot}" class="img-fluid">`;
                     $('#sarima-result').html(html);
                 },
                 error: function(response) {
@@ -158,5 +145,6 @@
             });
         });
     </script>
+    
 </body>
 </html>
