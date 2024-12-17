@@ -31,7 +31,23 @@ def sarima_forecast():
 
         if "error" in result:
             return jsonify({"error": result["error"]}), 400
-        return jsonify(result)
+
+        # Include MAPE in the response
+        summary = {
+            "Forecast Summary": {
+                "Start Date": result["dates"][0],
+                "End Date": result["dates"][-1],
+                "Forecast Values": [
+                    {"Date": date, "Forecast": forecast, "Lower_CI": lower_ci, "Upper_CI": upper_ci}
+                    for date, forecast, lower_ci, upper_ci in zip(
+                        result["dates"], result["forecast"], result["lower_ci"], result["upper_ci"]
+                    )
+                ],
+                "MAPE": result["mape"]  # Include MAPE here
+            }
+        }
+
+        return jsonify(result)  # Return the result JSON
     except Exception as e:
         print(f"Error in /sarima route: {e}")
         return jsonify({"error": "Server encountered an error"}), 500
