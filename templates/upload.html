@@ -49,6 +49,7 @@
                 data: JSON.stringify(data),
                 success: function(response) {
                     const { dates, forecast, lower_ci, upper_ci, plot, mape } = response;
+                    // If response structure is incorrect, it will cause errors here.
                     let html = '<h4>Forecast Results</h4><table class="table table-striped">';
                     html += '<tr><th>Date</th><th>Forecast</th><th>Lower CI</th><th>Upper CI</th></tr>';
                     for (let i = 0; i < dates.length; i++) {
@@ -57,7 +58,7 @@
                                     <td>${forecast[i].toFixed(2)}</td>
                                     <td>${lower_ci[i].toFixed(2)}</td>
                                     <td>${upper_ci[i].toFixed(2)}</td>
-                                 </tr>`;
+                                </tr>`;
                     }
                     html += '</table>';
                     html += `<h4>Model Performance</h4><p>MAPE: <strong>${mape}%</strong></p>`;
@@ -70,7 +71,5 @@
             });
         });
     </script>
-    
-    
 </body>
 </html>

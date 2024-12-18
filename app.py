@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = './uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
+hana_connection = None
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
@@ -36,7 +36,6 @@ def sarima_forecast():
         if "error" in result:
             return jsonify({"error": result["error"]}), 400
 
-        # Include MAPE in the response
         summary = {
             "Forecast Summary": {
                 "Start Date": result["dates"][0],
@@ -47,16 +46,15 @@ def sarima_forecast():
                         result["dates"], result["forecast"], result["lower_ci"], result["upper_ci"]
                     )
                 ],
-                "MAPE": result["mape"]  # Include MAPE here
+                "MAPE": result["mape"]
+                 # Include MAPE here
             }
         }
+        return jsonify(result)  # Return the summary JSON
 
-        return jsonify(result)  # Return the result JSON
     except Exception as e:
         print(f"Error in /sarima route: {e}")
         return jsonify({"error": "Server encountered an error"}), 500
 
-
 if __name__ == '__main__':
-      print('hello')
-      app.run(host='0.0.0.0', port=8000)
+      app.run(host='0.0.0.0', port=5000)

@@ -34,4 +34,3 @@ def get_hana_dataframe():
     except Exception as e:
         print(f"Error creating HANA DataFrame: {e}")
         return None
-
